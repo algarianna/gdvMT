@@ -5,13 +5,15 @@ import pandas as pd
 def draw_raster(dirpath, raster_list, save=False, delimiter=';'):
     FONTSIZE   = 12
 
-    fpath_list = [dirpath + "raster_" + e + ".csv" for e in raster_list]
+    # fpath_list = [dirpath + "raster_" + e + ".csv" for e in raster_list]
+    fpath_list = [dirpath + raster + ".csv" for raster in raster_list]
+
 
     x,y = ([] for _ in range(2))
     for i in range(len(fpath_list)):
-        spikes  = pd.read_csv(fpath_list[i], sep=delimiter)
-        x.append(spikes['time'])
-        y.append(spikes['neuron_id'])    
+        spikes  = pd.read_csv(fpath_list[i], sep=delimiter, header = None)
+        x=spikes[spikes.columns[0]].tolist()
+        y=spikes[spikes.columns[1]].tolist()
 
     fig = plt.figure("Raster plot")
     for i in range(len(raster_list)):

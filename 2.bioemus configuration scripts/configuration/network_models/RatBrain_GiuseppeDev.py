@@ -230,7 +230,7 @@ class RatBrain:
             y_th_value = 0.5                            # definisce numero di neuroni nel cluster -> numero di cluster [0.5] (cambiare con attenzione)
                                                         # definisce il valore oltre il quale deve essere il valore della funzione affinche il neurone vada nel cluster
             idx = [i for i in n if ff**i > y_th_value]  # trova il numero di neuroni che rendono la funzione maggiore di y_th_value
-            nbigcluster_in_diam_org = 3                                         # definisce in modo marginale il numero di cluster GIUSEPPE: 5
+            nbigcluster_in_diam_org = 3                                         # definisce in modo marginale il numero di cluster
                                                                                 # numero massimo di cluster adiacenti grandi che entrano diametralmente nel network
             r_max_cluster = diam/nbigcluster_in_diam_org/2                      # raggio massimo dei cluster
             rmax_centroids_center = r_max_cluster*(nbigcluster_in_diam_org-1)   # distanza massima del centro dei centroidi dal centro del network
@@ -242,18 +242,20 @@ class RatBrain:
 
             time_spent_creating_network = max_execution_time + 1    # inizializzazione tempo speso per la creazione network
             p_constrain = []                                        # inizializzazione vincolo pcentroid (l'inizializzazione sul tempo basta per entrare nel ciclo while)
+            
+            x = []    # questi stavano dentro al while not (7 gennaio 2025)
+            y = []
+            xcentroid = []
+            ycentroid = []
+            rcentroid = []
+            pcentroid = []
+            dist2c = []  # fino qua
+            
+
             while not (time_spent_creating_network < max_execution_time and len(p_constrain)==0):
                 start_network_creation_time = time.time()
 
-                x = []
-                y = []
-                xcentroid = []
-                ycentroid = []
-                rcentroid = []
-                pcentroid = []
-                dist2c = []
-                positions = []
-                nb_cluster = int(1)
+                
 
                 f = 1
                 rand_neur_prob = 0.05   # probabilità che il primo neurone (con f = 1) non crei un cluster (per avere i neuroni random in mezzo ai cluster)
@@ -286,8 +288,7 @@ class RatBrain:
                             yt = r * math.sin(alfa) + ycentroid[-1]
                             f = f * ff_temp
                         else:                                                                                    # crea nuovo cluster  
-                            pcentroid.append(f)
-                            nb_cluster = int(nb_cluster+1)     
+                            pcentroid.append(f)     
 
                             r = rmax_centroids_center * (2-u if u > 1 else u)
                             xt = r * math.cos(alfa) + center_xy[0]
@@ -315,10 +316,8 @@ class RatBrain:
                     x.append(xt)
                     y.append(yt)
                     dist2c.append(dc)
-                    positions.append([xt,yt,int(nb_cluster)])
 
                 pcentroid.append(f)
-                np.savetxt("positions.csv",positions,delimiter =", ",fmt ='% s')
 
                 time_spent_creating_network = time.time() - start_network_creation_time
                 p_constrain = [i for i in pcentroid if i>(np.mean(pcentroid)+2*np.std(pcentroid))]
@@ -594,5 +593,3 @@ class RatBrain:
             return [self.x_all, self.y_all]
         else:
             return [self.x[org_id], self.y[org_id]]
-    
-    

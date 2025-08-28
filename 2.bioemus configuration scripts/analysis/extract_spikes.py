@@ -18,12 +18,13 @@ def shape_data(data):
     return neuron_list, timestamps, activeneurons
 
 
-def extract_spikes(dirpath, raster_list, header_len=1, delimiter=';'):
-    fpath_list = [dirpath + "raster_" + e + ".csv" for e in raster_list]
-    
+def extract_spikes(dirpath, raster_list, delimiter=';'):
+    # fpath_list = [dirpath + "raster_" + e + ".csv" for e in raster_list]
+    fpath_list = [dirpath + raster + ".csv" for raster in raster_list]
+
     tstamp_list   = []
     for i in range(len(fpath_list)):
-        spikes = np.loadtxt(fpath_list[i], skiprows=header_len, delimiter=delimiter)
+        spikes = np.loadtxt(fpath_list[i], delimiter=delimiter)
         [nlist, tstamp, nactive] = shape_data(spikes)
         tstamp_list.append(tstamp)
 

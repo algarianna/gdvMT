@@ -30,7 +30,8 @@ def gen_config(config_name:str, save_path:str="./", en_stim=False, stim_delay_ms
     # System parameters ####################################################################
     # Hardware platform (from KR260 platform)
     sw_ver              = SOFTWARE_VERSION
-    NB_NEURONS          = HW_MAX_NB_NEURONS
+    # NB_NEURONS          = HW_MAX_NB_NEURONS
+    NB_NEURONS          = 163
     dt                  = HW_DT
 
     # Files
@@ -46,7 +47,8 @@ def gen_config(config_name:str, save_path:str="./", en_stim=False, stim_delay_ms
     # Application parameters ################################################################
     swconfig_builder                                           = SwConfigFile()
     swconfig_builder.parameters["fpath_hwconfig"]              = "/home/ubuntu/bioemus/config/hwconfig_" + config_fname + ".txt"
-    swconfig_builder.parameters["emulation_time_s"]            = 600                                    # <EDIT>
+    swconfig_builder.parameters["emulation_time_s"]            = 100                                    # <EDIT>
+    swconfig_builder.parameters["nb_neurons"]                  = NB_NEURONS # default
     swconfig_builder.parameters["sel_nrn_vmem_dac"]            = [n for n in range(8)]
     swconfig_builder.parameters["sel_nrn_vmem_dma"]            = [n for n in range(16)]
     swconfig_builder.parameters["save_local_spikes"]           = True
@@ -236,18 +238,18 @@ def gen_config(config_name:str, save_path:str="./", en_stim=False, stim_delay_ms
         ## (1) - Add organoids
         NB_ORGANOID = 1                                                             # <EDIT>
         for i in range(NB_ORGANOID):
-            org.addOrganoid(org_diam=250, nrn_diam=15, org_center_xy=[500*i, 0])    # <EDIT>
+            org.addOrganoid(org_diam=150, nrn_diam=15, org_center_xy=[500*i, 0])    # <EDIT> diam was 250
 
         ## (2) - Generate neurons
-        org.genNeurons(inh_ratio=0.215)                                               # <EDIT>
+        org.genNeurons(inh_ratio=0.215)                                             # <EDIT>
 
         ## (3) - Generate synaptic connections
         for src in range(NB_ORGANOID):
             for dest in range(NB_ORGANOID):
                 if src == dest: # within networks
-                    org.genSynCon(rule="smallworld",     org_src=src, org_dest=dest, max_pcon=0.3, config_param=config_param) # <EDIT>
+                    org.genSynCon(rule="smallworld",     org_src=src, org_dest=dest, max_pcon=0.1, config_param=config_param) # <EDIT>
                 else: # between networks
-                    org.genSynCon(rule="smallworld",     org_src=src, org_dest=dest, max_pcon=0.03) # <EDIT>
+                    org.genSynCon(rule="smallworld",     org_src=src, org_dest=dest, max_pcon=0.01) # <EDIT>
 
         ## (4) - Assign weights
         for src in range(NB_ORGANOID):
@@ -307,6 +309,9 @@ def gen_config(config_name:str, save_path:str="./", en_stim=False, stim_delay_ms
         tnrn = tnrn_org
 
         xy_pos = org.getPosXY()
+        
+
+        # swconfig_builder.parameters["nb_neurons"] = org.nb_nrn    Jeremy
     else:
         exit()
 
